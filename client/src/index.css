@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+:root {
+  --qm-navy: #1e3a5f;
+  --qm-amber: #f59e0b;
+}
+
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: #f1f5f9;
+  color: #0f172a;
+  overscroll-behavior-y: contain;
+}
+
+/* Big touch-friendly inputs for field use */
+.qm-input {
+  width: 100%;
+  padding: 0.75rem 0.875rem;
+  font-size: 1rem;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 0.625rem;
+  background: #fff;
+}
+.qm-input:focus {
+  outline: none;
+  border-color: var(--qm-navy);
+  box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.12);
+}
+.qm-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 0.25rem;
+}
+.qm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  min-height: 3rem;
+}
+.qm-btn-primary {
+  background: var(--qm-navy);
+  color: #fff;
+}
+.qm-btn-primary:active { background: #16294a; }
+.qm-btn-accent {
+  background: var(--qm-amber);
+  color: #1c1917;
+}
+.qm-card {
+  background: #fff;
+  border-radius: 0.875rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  padding: 1rem;
+}
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: #fff; }
+  .qm-card { box-shadow: none; border: 1px solid #e2e8f0; }
+}

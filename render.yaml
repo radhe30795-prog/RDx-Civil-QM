@@ -1,0 +1,25 @@
+# Render Blueprint — free-tier deploy of RDx Civil QM.
+# Usage: Render Dashboard -> New -> Blueprint -> connect the repo,
+# then fill the `sync: false` values (DATABASE_URL from TiDB Cloud).
+# Nothing here costs money on the free plan.
+services:
+  - type: web
+    name: rdx-civil-qm
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      # --- Database: TiDB Cloud Serverless (free, MySQL-compatible) ---
+      # Create a database named `qm` in your TiDB Cloud cluster, then paste
+      # the connection string, e.g.
+      #   mysql://<user>:<pass>@<host>:4000/qm
+      - key: DATABASE_URL
+        sync: false
+      # TiDB Cloud requires TLS
+      - key: DB_SSL
+        value: true
