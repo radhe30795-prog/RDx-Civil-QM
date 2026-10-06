@@ -29,6 +29,13 @@
       "when": 1791272841495,
       "tag": "0003_consumption_statements",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1791280567551,
+      "tag": "0004_auth",
+      "breakpoints": true
     }
   ]
 }

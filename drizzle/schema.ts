@@ -5,12 +5,35 @@ import {
   mysqlTable,
   text,
   timestamp,
+  tinyint,
   varchar,
 } from "drizzle-orm/mysql-core";
+
+// ---------------- Users & sessions (multi-user auth) ----------------
+export const users = mysqlTable("users", {
+  id: int("id").autoincrement().primaryKey(),
+  username: varchar("username", { length: 80 }).notNull().unique(),
+  passwordHash: varchar("passwordHash", { length: 200 }).notNull(),
+  name: varchar("name", { length: 120 }).notNull(),
+  role: mysqlEnum("role", ["admin", "user"]).default("user").notNull(),
+  isActive: tinyint("isActive").default(1).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type User = typeof users.$inferSelect;
+export type SafeUser = Omit<User, "passwordHash">;
+
+export const sessions = mysqlTable("sessions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  token: varchar("token", { length: 128 }).notNull().unique(),
+  expiresAt: timestamp("expiresAt").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
 
 // ---------------- Projects ----------------
 export const projects = mysqlTable("projects", {
   id: int("id").autoincrement().primaryKey(),
+  userId: int("userId"),
   name: varchar("name", { length: 200 }).notNull(),
   packageNo: varchar("packageNo", { length: 80 }),
   client: varchar("client", { length: 200 }),
@@ -38,6 +61,7 @@ export type TestMaster = typeof testMasters.$inferSelect;
 // ---------------- Test entries ----------------
 export const testEntries = mysqlTable("test_entries", {
   id: int("id").autoincrement().primaryKey(),
+  userId: int("userId"),
   projectId: int("projectId").notNull(),
   testMasterId: int("testMasterId").notNull(),
   testDate: varchar("testDate", { length: 20 }).notNull(), // YYYY-MM-DD
@@ -62,6 +86,7 @@ export type InsertTestEntry = typeof testEntries.$inferInsert;
 // ---------------- Consumption statements (RA bill format) ----------------
 export const consumptionStatements = mysqlTable("consumption_statements", {
   id: int("id").autoincrement().primaryKey(),
+  userId: int("userId"),
   date: varchar("date", { length: 20 }).notNull(), // YYYY-MM-DD
   raBillNo: varchar("raBillNo", { length: 60 }).notNull(),
   rows: json("rows").$type<Array<{ item: string; qty: number }>>().notNull().default([]),

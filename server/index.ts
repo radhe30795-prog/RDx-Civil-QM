@@ -5,8 +5,35 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { appRouter } from "./routers";
+import { getDb } from "./db";
+import { sessions, users } from "../drizzle/schema";
+import { eq, and, gt } from "drizzle-orm";
+import type { Context } from "./trpc";
+import type { SafeUser } from "../drizzle/schema";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Resolve the logged-in user from the x-auth-token header.
+// Returns null when there is no token, it is expired, or the user is inactive.
+async function resolveUser(req: express.Request): Promise<SafeUser | null> {
+  const token = req.header("x-auth-token");
+  if (!token) return null;
+  const db = await getDb();
+  if (!db) return null;
+  try {
+    const rows = await db
+      .select({ session: sessions, user: users })
+      .from(sessions)
+      .innerJoin(users, eq(sessions.userId, users.id))
+      .where(and(eq(sessions.token, token), gt(sessions.expiresAt, new Date())));
+    const row = rows[0] as any;
+    if (!row?.user || !row.user.isActive) return null;
+    const { passwordHash, ...safe } = row.user;
+    return safe as SafeUser;
+  } catch {
+    return null;
+  }
+}
 
 async function start() {
   const app = express();
@@ -16,7 +43,12 @@ async function start() {
 
   app.use(
     "/api/trpc",
-    createExpressMiddleware({ router: appRouter, createContext: () => ({}) })
+    createExpressMiddleware({
+      router: appRouter,
+      createContext: async ({ req }): Promise<Context> => ({
+        user: await resolveUser(req),
+      }),
+    })
   );
 
   // Serve built PWA
