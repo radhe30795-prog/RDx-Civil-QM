@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.rdx.civilqm",
+      "sha256_cert_fingerprints": [
+        "04:64:9D:D8:A1:8F:6B:41:8C:17:39:8B:07:0E:97:01:85:61:B6:84:63:8D:78:53:DA:D0:C0:90:6C:28:CB:AC"
+      ]
+    }
+  }
+]
