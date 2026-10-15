@@ -53,6 +53,11 @@ async function start() {
 
   // Serve built PWA
   const pub = path.join(__dirname, "public");
+  // Digital Asset Links for Android TWA verification (explicit route: express.static ignores dotfiles by default)
+  app.get("/.well-known/assetlinks.json", (_req, res) => {
+    res.type("application/json");
+    res.sendFile(path.join(pub, ".well-known", "assetlinks.json"));
+  });
   app.use(express.static(pub));
   app.get("*", (_req, res) => res.sendFile(path.join(pub, "index.html")));
 
